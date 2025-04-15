@@ -1,8 +1,8 @@
-# Building QEMU with emscripten with Wasm backend patch
+# Building QEMU TCI mode with emscripten
 
-Patch is maintained in https://github.com/ktock/qemu-wasm/pull/21
+Patch is maintained in https://github.com/ktock/qemu-wasm/pull/22
 
-Assuming this repository and [Wasm backend patch](https://github.com/ktock/qemu-wasm/pull/21) are cloned locally.
+Assuming this repository and [patch to compile TCI mode with Emscripten](https://github.com/ktock/qemu-wasm/pull/21) are cloned locally.
 Set the current directory to the root directory of this repository.
 
 ## Prepare build environemnt
@@ -19,7 +19,7 @@ This contains the following prerequisites.
 
 This container also contains xterm-pty which is an on-browser terminal emulator integrated with emscripten.
 
-Set `QEMU_REPO` envvar to the path of the local QEMU repository with the Wasm backend patch.
+Set `QEMU_REPO` envvar to the path of the local QEMU repository with the patch applied.
 Run the following command to build the container.
 
 ```
@@ -40,15 +40,15 @@ docker exec -it build-qemu /bin/bash
 QEMU can be compiled using Emscripten's emconfigure and emmake, which automatically set environment variables such as CC for targeting Emscripten.
 
 ```
-emconfigure /qemu/configure --static --disable-tools --target-list=x86_64-softmmu
+emconfigure /qemu/configure --static --disable-tools --target-list=arm-softmmu --enable-tcg-interpreter
 emmake make -j$(nproc)
 ```
 
 This process generates the following files:
 
-- qemu-system-x86_64.js
-- qemu-system-x86_64.wasm
-- qemu-system-x86_64.worker.js
+- qemu-system-arm.js
+- qemu-system-arm.wasm
+- qemu-system-arm.worker.js
 
 Sample guest images (under `/images/` dir in the container) can be packaged using Emscripten's file_packager.py tool.
 The following command packages them, allowing QEMU to access them through Emscripten's virtual filesystem:
@@ -58,12 +58,12 @@ mkdir pack
 cp /images/kernel.img pack/
 cp /images/rootfs.bin pack/
 cp -r /qemu/pc-bios/* pack/
-/emsdk/upstream/emscripten/tools/file_packager.py qemu-system-x86_64.data --preload pack > load.js
+/emsdk/upstream/emscripten/tools/file_packager.py qemu-system-arm.data --preload pack > load.js
 ```
 
 This process generates the following files:
 
-- qemu-system-x86_64.data
+- qemu-system-arm.data
 - load.js
 
 ## Serve QEMU to the browser
@@ -77,8 +77,8 @@ Emscripten allows passing arguments to the QEMU command via the Module object in
 
 ```
 mkdir -p /tmp/test/htdocs/
-docker cp build-qemu:/build/qemu-system-x86_64.js /tmp/test/htdocs/out.js
-for f in qemu-system-x86_64.wasm qemu-system-x86_64.worker.js qemu-system-x86_64.data load.js ; do
+docker cp build-qemu:/build/qemu-system-arm.js /tmp/test/htdocs/out.js
+for f in qemu-system-arm.wasm qemu-system-arm.worker.js qemu-system-arm.data load.js ; do
   docker cp build-qemu:/build/${f} /tmp/test/htdocs/
 done
 cp ./samples/{index.html,module.js} /tmp/test/htdocs/

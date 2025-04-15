@@ -1,7 +1,9 @@
 Module['arguments'] = [
-    '-nographic', '-m', '512M', '-accel', 'tcg,tb-size=500',
+    '-nographic', '-m', '512M', '-machine', 'virt',
     '-L', 'pack/',
-    '-drive', 'if=virtio,format=raw,file=pack/rootfs.bin',
+    '-global', 'virtio-mmio.force-legacy=false',
+    '-device', 'virtio-blk-device,drive=d0',
+    '-drive', 'file=pack/rootfs.bin,if=none,format=raw,id=d0',
     '-kernel', 'pack/kernel.img',
-    '-append', 'earlyprintk=ttyS0 console=ttyS0 root=/dev/vda loglevel=7',
+    '-append', 'console=ttyAMA0 root=/dev/vda loglevel=7',
 ];
