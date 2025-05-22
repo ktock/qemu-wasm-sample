@@ -44,6 +44,8 @@ emconfigure /qemu/configure --static --disable-tools --target-list=x86_64-softmm
 emmake make -j$(nproc)
 ```
 
+> NOTE: add --enable-tcg-interpreter to enable TCI mode
+
 This process generates the following files:
 
 - qemu-system-x86_64.js
