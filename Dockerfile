@@ -37,8 +37,9 @@ RUN make ARCH=x86 CROSS_COMPILE=x86_64-linux-gnu- -j$(nproc) all && \
 
 FROM ${QEMU_BASE_IMAGE}
 WORKDIR /builddeps/
-ENV EMCC_CFLAGS="--js-library=/builddeps/node_modules/xterm-pty/emscripten-pty.js"
 RUN npm i xterm-pty@v0.10.1
+RUN cp /builddeps/node_modules/xterm-pty/emscripten-pty.js /builddeps/target/lib/libemscripten-pty.js
+ENV EMCC_CFLAGS="-L/builddeps/target/lib/ -lemscripten-pty.js -Wno-unused-command-line-argument"
 WORKDIR /build/
 
 COPY --from=rootfs-dev /out/rootfs.bin /images/

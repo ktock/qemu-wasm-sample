@@ -1,5 +1,5 @@
 Module['arguments'] = [
-    '-nographic', '-m', '512M', '-accel', 'tcg,tb-size=500',
+    '-nographic', '-m', '512M',
     '-L', 'pack/',
     '-drive', 'if=virtio,format=raw,file=pack/rootfs.bin',
     '-kernel', 'pack/kernel.img',
