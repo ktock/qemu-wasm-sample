@@ -85,11 +85,12 @@ The following needs to run inside the build environment container.
 
 QEMU can be compiled using Emscripten's emconfigure and emmake.
 QEMU's configure script supports `--cpu=wasm64` flag to compile QEMU with 64bit pointer support.
-`--wasm64-memory64=2` flag enables lowering support.
-The value of this flag is propagated to Emscripten's [`-sMEMORY64` flag](https://emscripten.org/docs/tools_reference/settings_reference.html#memory64).
+`--wasm64-32bit-address-limit` flag enables the lowering support of Emscripten's [`-sMEMORY64=2` flag](https://emscripten.org/docs/tools_reference/settings_reference.html#memory64).
+
+> Note: --wasm64-memory64=2 flag in the V1 patch series has been renamed to --wasm64-32bit-address-limit in V2
 
 ```
-emconfigure /qemu/configure --cpu=wasm64 --wasm64-memory64=2 --static --disable-tools \
+emconfigure /qemu/configure --cpu=wasm64 --wasm64-32bit-address-limit --static --disable-tools \
                             --target-list=x86_64-softmmu --enable-tcg-interpreter
 emmake make -j$(nproc)
 ```
