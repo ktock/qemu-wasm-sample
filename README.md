@@ -2,7 +2,7 @@
 
 Patch is maintained in https://github.com/ktock/qemu-wasm/pull/32
 
-Assuming this repository and [a patch for the Wasm TCG backend support](https://github.com/ktock/qemu-wasm/pull/32) are cloned locally.
+Assuming this repository and [a patch for the Wasm TCG backend support](https://github.com/ktock/qemu-wasm/pull/33) are cloned locally.
 Set the current directory to the root directory of this repository.
 
 ## Compiling QEMU
@@ -27,7 +27,7 @@ This section shows steps to compile QEMU for wasm64.
 Note that some engines, including Safari, don't support wasm64 as of now.
 The adoption status of wasm64 can be seen at https://webassembly.org/features/ .
 
-Set `QEMU_REPO` environment variable to the path of the local QEMU repository with [the patch for the Wasm TCG backend support](https://github.com/ktock/qemu-wasm/pull/32).
+Set `QEMU_REPO` environment variable to the path of the local QEMU repository with [the patch for the Wasm TCG backend support](https://github.com/ktock/qemu-wasm/pull/33).
 Run the following command to build the container.
 
 ```
@@ -64,7 +64,7 @@ This process generates the following files:
 This section shows steps to compile QEMU for wasm64 while still alowing it to run on wasm32 engines, using Emscripten's [`-sMEMORY64=2`](https://emscripten.org/docs/tools_reference/settings_reference.html#memory64).
 This flag still enables 64bit pointers in the C code and Emscripten lowers the output to wasm32 with limiting the available memory size to 4GB, which allows QEMU to run on wasm32 engines.
 
-Set `QEMU_REPO` environment variable to the path of the local QEMU repository with [the patch for the Wasm TCG backend support](https://github.com/ktock/qemu-wasm/pull/32).
+Set `QEMU_REPO` environment variable to the path of the local QEMU repository with [the patch for the Wasm TCG backend support](https://github.com/ktock/qemu-wasm/pull/33).
 Run the following command to build the container. 
 The build arg `WASM64_MEMORY64=2` builds the dependencies with maintaining wasm32 compatibility.
 
