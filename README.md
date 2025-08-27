@@ -1,6 +1,6 @@
 # Building QEMU with the Wasm TCG backend support
 
-Patch is maintained in https://github.com/ktock/qemu-wasm/pull/32
+Patch is maintained in https://github.com/ktock/qemu-wasm/pull/33
 
 Assuming this repository and [a patch for the Wasm TCG backend support](https://github.com/ktock/qemu-wasm/pull/33) are cloned locally.
 Set the current directory to the root directory of this repository.
