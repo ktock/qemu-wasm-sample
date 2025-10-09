@@ -1,0 +1,48 @@
+<html>
+  <head>
+    <title>QEMU</title>
+    <link rel="stylesheet" href="https://unpkg.com/@xterm/xterm@5.5.0/css/xterm.css" />
+  </head>
+  <body>
+    <div id="terminal"></div>
+    <script src="./load.js"></script>
+    <script type="module">
+      import 'https://unpkg.com/xterm@5.3.0/lib/xterm.js';
+      import 'https://unpkg.com/xterm-pty/index.js';
+      import './module.js'
+      import initEmscriptenModule from './out.js';
+
+      const xterm = new Terminal();
+      xterm.open(document.getElementById("terminal"));
+
+      const { master, slave } = openpty();
+
+      xterm.loadAddon(master);
+
+      Module.pty = slave;
+      Module['mainScriptUrlOrBlob'] = location.origin + "/out.js";
+
+      var readableCallbacks = [];
+      Module.pty.onReadable(() => {
+        readableCallbacks.forEach(cb => cb());
+        readableCallbacks = [];
+      });
+      (async () => {
+        const instance = await initEmscriptenModule(Module);
+        Module['TTY'].stream_ops.poll = (stream, timeout, notifyCallback) => {
+          if (Module.pty.readable) {
+            return 1;
+          }
+          if (notifyCallback != null) {
+            notifyCallback.registerCleanupFunc(() => {
+              const i = readableCallbacks.indexOf(notifyCallback);
+              if (i != -1) readableCallbacks.splice(i, 1);
+            });
+            readableCallbacks.push(notifyCallback);
+          }
+          return 0;
+        };
+      })();
+    </script>
+  </body>
+</html>

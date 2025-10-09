@@ -1,0 +1,26 @@
+diff --git a/tests/docker/dockerfiles/emsdk-wasm-cross.docker b/tests/docker/dockerfiles/emsdk-wasm-cross.docker
+index 4b41be62ab..7105e4d44a 100644
+--- a/tests/docker/dockerfiles/emsdk-wasm-cross.docker
++++ b/tests/docker/dockerfiles/emsdk-wasm-cross.docker
+@@ -13,6 +13,12 @@ ARG WASM64_MEMORY64=0
+ FROM emscripten/emsdk:$EMSDK_VERSION_QEMU AS build-base-common
+ ARG TARGET_CPU
+ ARG MESON_VERSION
++# Apply https://github.com/emscripten-core/emscripten/pull/25523
++RUN emsdk update && emsdk install latest && \
++    git clone --depth 1 -b fixselect https://github.com/ktock/emscripten /emscripten-fix/ && \
++    cd /emscripten-fix/ && ./bootstrap.py
++ENV EM_CONFIG=/emsdk/.emscripten
++ENV PATH="/emscripten-fix/:$PATH"
+ ENV TARGET=/builddeps/target
+ ENV CPATH="$TARGET/include"
+ ENV PKG_CONFIG_PATH="$TARGET/lib/pkgconfig"
+@@ -153,6 +159,8 @@ RUN meson setup _build --prefix=$TARGET --cross-file=/cross.meson \
+ #        which isn't detected during meson setup.
+ RUN sed -i -E "/#define HAVE_POSIX_SPAWN 1/d" ./_build/config.h
+ RUN sed -i -E "/#define HAVE_PTHREAD_GETNAME_NP 1/d" ./_build/config.h
++# Instead of poll, use select fixed by https://github.com/emscripten-core/emscripten/pull/25523
++RUN echo "#define BROKEN_POLL true" >> ./_build/config.h
+ RUN meson install -C _build
+ 
+ FROM build-base
