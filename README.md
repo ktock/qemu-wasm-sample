@@ -1,8 +1,6 @@
 # Building QEMU TCI mode with emscripten
 
-Patch is maintained in https://github.com/ktock/qemu-wasm/pull/22
-
-Assuming this repository and [patch to compile TCI mode with Emscripten](https://github.com/ktock/qemu-wasm/pull/21) are cloned locally.
+Assuming this repository and the QEMU repository are cloned locally.
 Set the current directory to the root directory of this repository.
 
 ## Prepare build environemnt
@@ -19,7 +17,7 @@ This contains the following prerequisites.
 
 This container also contains xterm-pty which is an on-browser terminal emulator integrated with emscripten.
 
-Set `QEMU_REPO` envvar to the path of the local QEMU repository with the patch applied.
+Set `QEMU_REPO` envvar to the path of the local QEMU repository.
 Run the following command to build the container.
 
 ```
