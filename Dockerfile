@@ -4,7 +4,7 @@ FROM ubuntu:22.04 AS rootfs-dev
 ARG BUSYBOX_VERSION=1.36.1
 RUN apt-get update && apt-get install -y gcc-x86-64-linux-gnu linux-libc-dev-amd64-cross git make gcc bzip2 wget
 WORKDIR /work
-RUN wget https://busybox.net/downloads/busybox-${BUSYBOX_VERSION}.tar.bz2
+RUN wget --no-check-certificate https://busybox.net/downloads/busybox-${BUSYBOX_VERSION}.tar.bz2
 RUN bzip2 -d busybox-${BUSYBOX_VERSION}.tar.bz2
 RUN tar xf busybox-${BUSYBOX_VERSION}.tar
 WORKDIR /work/busybox-${BUSYBOX_VERSION}
@@ -37,7 +37,7 @@ RUN make ARCH=x86 CROSS_COMPILE=x86_64-linux-gnu- -j$(nproc) all && \
 
 FROM ${QEMU_BASE_IMAGE}
 WORKDIR /builddeps/
-ENV EMCC_CFLAGS="--js-library=/builddeps/node_modules/xterm-pty/emscripten-pty.js"
+ENV LDFLAGS="--js-library=/builddeps/node_modules/xterm-pty/emscripten-pty.js"
 RUN npm i xterm-pty@v0.10.1
 WORKDIR /build/
 

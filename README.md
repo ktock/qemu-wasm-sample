@@ -78,13 +78,7 @@ Emscripten allows passing arguments to the QEMU command via the Module object in
 > NOTE: Additional configuration for httpd (`cc.conf`) is needed for setting COOP and COEP headers to enable SharedArrayBuffer. This is needed by emscripten's pthreads support. For more details, please refer to the doc: https://emscripten.org/docs/porting/pthreads.html
 
 ```
-mkdir -p /tmp/test/htdocs/
-docker cp build-qemu:/build/qemu-system-x86_64.js /tmp/test/htdocs/out.js
-for f in qemu-system-x86_64.wasm qemu-system-x86_64.worker.js qemu-system-x86_64.data load.js ; do
-  docker cp build-qemu:/build/${f} /tmp/test/htdocs/
-done
-cp ./samples/{index.html,module.js} /tmp/test/htdocs/
-cp ./samples/cc.conf /tmp/test/
+./scripts/export-htdocs.sh build-qemu /tmp/test
 docker run --rm -p 127.0.0.1:8888:80 \
        -v "/tmp/test/htdocs:/usr/local/apache2/htdocs/:ro" \
        -v "/tmp/test/cc.conf:/usr/local/apache2/conf/extra/cc.conf:ro" \
