@@ -5,12 +5,13 @@
   </head>
   <body>
     <div id="terminal"></div>
-    <script src="./load.js"></script>
+    <script>let Module = {};</script>
     <script type="module">
       import 'https://unpkg.com/xterm@5.3.0/lib/xterm.js';
       import 'https://unpkg.com/xterm-pty/index.js';
       import './module.js'
       import initEmscriptenModule from './out.js';
+      import preloadModule from './load.js';
 
       const xterm = new Terminal();
       xterm.open(document.getElementById("terminal"));
@@ -22,11 +23,28 @@
       Module.pty = slave;
       Module['mainScriptUrlOrBlob'] = location.origin + "/out.js";
 
-      (async () => {
-          const instance = await initEmscriptenModule(Module);
-          var oldPoll = Module['TTY'].stream_ops.poll;
-          Module['TTY'].stream_ops.poll = (stream, timeout) => oldPoll.call(stream, 0);
-      })();
+      var readableCallbacks = [];
+      Module.pty.onReadable(() => {
+          readableCallbacks.forEach(cb => cb());
+          readableCallbacks = [];
+      });
+      Module['preRun'] = [(Module) => {
+          Module['TTY'].stream_ops.poll = (stream, timeout, notifyCallback) => {
+              if (Module.pty.readable) {
+                  return 1;
+              }
+              if (notifyCallback != null) {
+                  notifyCallback.registerCleanupFunc(() => {
+                      const i = readableCallbacks.indexOf(notifyCallback);
+                      if (i != -1) readableCallbacks.splice(i, 1);
+                  });
+                  readableCallbacks.push(notifyCallback);
+              }
+              return 0;
+          };
+      }];
+      preloadModule(Module);
+      initEmscriptenModule(Module);
     </script>
   </body>
 </html>

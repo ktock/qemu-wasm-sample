@@ -37,9 +37,11 @@ RUN make ARCH=x86 CROSS_COMPILE=x86_64-linux-gnu- -j$(nproc) all && \
 
 FROM ${QEMU_BASE_IMAGE}
 WORKDIR /builddeps/
+RUN emsdk install node-24.7.0-64bit
+ENV PATH=/emsdk/node/24.7.0_64bit/bin/:$PATH
 RUN npm i xterm-pty@v0.10.1
 RUN cp /builddeps/node_modules/xterm-pty/emscripten-pty.js /builddeps/target/lib/libemscripten-pty.js
-ENV EMCC_CFLAGS="-L/builddeps/target/lib/ -lemscripten-pty.js -Wno-unused-command-line-argument"
+ENV XTERM_PTY_CFLAGS="-L/builddeps/target/lib/ -lemscripten-pty.js -Wno-unused-command-line-argument"
 WORKDIR /build/
 
 COPY --from=rootfs-dev /out/rootfs.bin /images/
